@@ -13,3 +13,7 @@ outputs/*
 logs/*
 !logs/.gitkeep
 !logs/run_smoke.log
+!logs/slurm-smoke-*.out
+!logs/slurm-smoke-*.err
+!logs/slurm-full-*.out
+!logs/slurm-full-*.err
