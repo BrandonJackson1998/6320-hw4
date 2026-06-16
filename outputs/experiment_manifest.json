@@ -1,0 +1,112 @@
+{
+  "data_path": "/Users/brandon.jackson/Documents/GitHub/6320-hw4/data/week04_tlc_trip_duration_smoke_10k.parquet",
+  "output_dir": "/Users/brandon.jackson/Documents/GitHub/6320-hw4/outputs",
+  "seed": 6320,
+  "device": "cpu",
+  "experiments": [
+    {
+      "experiment": "case1_high_lr_failure",
+      "description": "Failure: learning rate too high for stable Adam updates.",
+      "learning_rate": 0.2,
+      "scale_target": true,
+      "scale_numeric": true,
+      "hidden_dim": 64,
+      "embed_dim": 16,
+      "epochs_requested": 12,
+      "epochs_ran": 12,
+      "batch_size": 512,
+      "seed": 6320,
+      "device": "cpu",
+      "target_log_mean": 6.562648773193359,
+      "target_log_std": 0.7224791049957275,
+      "final_train_loss_scaled_mse": 0.24421715215274264,
+      "final_validation_loss_scaled_mse": 0.32437273573875425,
+      "final_validation_mae_seconds": 282.6935729980469,
+      "prediction_summary": {
+        "validation_pred_seconds_mean": 809.3729858398438,
+        "validation_pred_seconds_std": 609.7026977539062,
+        "validation_pred_seconds_min": 78.168701171875,
+        "validation_pred_seconds_max": 4451.14892578125
+      },
+      "history_csv": "outputs/case1_high_lr_failure_history.csv"
+    },
+    {
+      "experiment": "case1_lr_corrected",
+      "description": "Correction: reduce learning rate while holding other settings fixed.",
+      "learning_rate": 0.001,
+      "scale_target": true,
+      "scale_numeric": true,
+      "hidden_dim": 64,
+      "embed_dim": 16,
+      "epochs_requested": 12,
+      "epochs_ran": 12,
+      "batch_size": 512,
+      "seed": 6320,
+      "device": "cpu",
+      "target_log_mean": 6.562648773193359,
+      "target_log_std": 0.7224791049957275,
+      "final_train_loss_scaled_mse": 0.2802439866406577,
+      "final_validation_loss_scaled_mse": 0.295061953385671,
+      "final_validation_mae_seconds": 272.92812727864583,
+      "prediction_summary": {
+        "validation_pred_seconds_mean": 845.88134765625,
+        "validation_pred_seconds_std": 617.9967651367188,
+        "validation_pred_seconds_min": 210.6686248779297,
+        "validation_pred_seconds_max": 4021.2080078125
+      },
+      "history_csv": "outputs/case1_lr_corrected_history.csv"
+    },
+    {
+      "experiment": "case2_unscaled_target_failure",
+      "description": "Failure: optimize raw log-duration targets without standardization.",
+      "learning_rate": 0.001,
+      "scale_target": false,
+      "scale_numeric": true,
+      "hidden_dim": 64,
+      "embed_dim": 16,
+      "epochs_requested": 12,
+      "epochs_ran": 12,
+      "batch_size": 512,
+      "seed": 6320,
+      "device": "cpu",
+      "target_log_mean": 6.562648773193359,
+      "target_log_std": 0.7224791049957275,
+      "final_train_loss_scaled_mse": 0.47202939425195967,
+      "final_validation_loss_scaled_mse": 0.4575785055955251,
+      "final_validation_mae_seconds": 430.60951220703123,
+      "prediction_summary": {
+        "validation_pred_seconds_mean": 862.1183471679688,
+        "validation_pred_seconds_std": 662.9017944335938,
+        "validation_pred_seconds_min": 12.017473220825195,
+        "validation_pred_seconds_max": 6824.1337890625
+      },
+      "history_csv": "outputs/case2_unscaled_target_failure_history.csv"
+    },
+    {
+      "experiment": "case2_scaled_target_corrected",
+      "description": "Correction: standardize log-duration targets using train mean/std.",
+      "learning_rate": 0.001,
+      "scale_target": true,
+      "scale_numeric": true,
+      "hidden_dim": 64,
+      "embed_dim": 16,
+      "epochs_requested": 12,
+      "epochs_ran": 12,
+      "batch_size": 512,
+      "seed": 6320,
+      "device": "cpu",
+      "target_log_mean": 6.562648773193359,
+      "target_log_std": 0.7224791049957275,
+      "final_train_loss_scaled_mse": 0.2802439866406577,
+      "final_validation_loss_scaled_mse": 0.295061953385671,
+      "final_validation_mae_seconds": 272.92812727864583,
+      "prediction_summary": {
+        "validation_pred_seconds_mean": 845.88134765625,
+        "validation_pred_seconds_std": 617.9967651367188,
+        "validation_pred_seconds_min": 210.6686248779297,
+        "validation_pred_seconds_max": 4021.2080078125
+      },
+      "history_csv": "outputs/case2_scaled_target_corrected_history.csv"
+    }
+  ]
+}

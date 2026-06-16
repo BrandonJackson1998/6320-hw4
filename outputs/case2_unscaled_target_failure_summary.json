@@ -1,0 +1,26 @@
+{
+  "experiment": "case2_unscaled_target_failure",
+  "description": "Failure: optimize raw log-duration targets without standardization.",
+  "learning_rate": 0.001,
+  "scale_target": false,
+  "scale_numeric": true,
+  "hidden_dim": 64,
+  "embed_dim": 16,
+  "epochs_requested": 12,
+  "epochs_ran": 12,
+  "batch_size": 512,
+  "seed": 6320,
+  "device": "cpu",
+  "target_log_mean": 6.562648773193359,
+  "target_log_std": 0.7224791049957275,
+  "final_train_loss_scaled_mse": 0.47202939425195967,
+  "final_validation_loss_scaled_mse": 0.4575785055955251,
+  "final_validation_mae_seconds": 430.60951220703123,
+  "prediction_summary": {
+    "validation_pred_seconds_mean": 862.1183471679688,
+    "validation_pred_seconds_std": 662.9017944335938,
+    "validation_pred_seconds_min": 12.017473220825195,
+    "validation_pred_seconds_max": 6824.1337890625
+  },
+  "history_csv": "outputs/case2_unscaled_target_failure_history.csv"
+}

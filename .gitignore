@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+.venv/
+venv/
+outputs/*
+!outputs/.gitkeep
+!outputs/*_history.csv
+!outputs/*_summary.json
+!outputs/experiment_manifest.json
+!outputs/plots/
+!outputs/plots/*.png
+logs/*
+!logs/.gitkeep
+!logs/run_smoke.log
