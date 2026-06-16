@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>CS6320_Assignment4_Jackson</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="cs-6320-assignment-4">CS 6320 — Assignment 4</h1>
+<p><strong>Name:</strong> Brandon Jackson<br />
+<strong>Semester:</strong> Summer 2026<br />
+<strong>Course:</strong> Deep Learning (CS 6320)</p>
+<hr />
+<h2 id="part-a-training-failure-and-debugging-report-nyc-tlc">Part A —
+Training failure and debugging report (NYC TLC)</h2>
+<h3 id="task-and-setup">Task and setup</h3>
+<p><strong>Dataset:</strong> Week 4 prepared NYC Yellow Taxi
+trip-duration Parquet
+(<code>week04_tlc_trip_duration_smoke_10k.parquet</code> locally; full
+file on CHPC).</p>
+<p><strong>Prediction task:</strong> Regress
+<code>target_log_duration</code> (<code>log1p</code> of trip seconds).
+Report <strong>validation MAE in seconds</strong> after
+<code>expm1</code>.</p>
+<p><strong>Features:</strong> <code>pickup_location_id</code>,
+<code>dropoff_location_id</code>, <code>pickup_hour</code>,
+<code>pickup_day_of_week</code> (embeddings);
+<code>pickup_day_of_month</code>, <code>trip_distance</code>,
+<code>passenger_count</code> (standardized numeric).</p>
+<p><strong>Split:</strong> Prepared temporal <code>split</code> column
+(<code>train</code> 70% / <code>validation</code> 15% /
+<code>test</code> 15%) — no random re-split.</p>
+<p><strong>Model:</strong> Small MLP with categorical embeddings (64
+hidden units), Adam optimizer, mini-batches of 512.</p>
+<p><strong>Seed / reproducibility:</strong> <code>6320</code> (fixed
+across all four runs). Validation metrics drive model selection each
+epoch; test split is held out and not used in these debugging runs.
+GPU/CUDA may introduce minor run-to-run nondeterminism, but cases are
+compared under the same seed and code path.</p>
+<p><strong>Implementation:</strong>
+<code>scripts/train_debugging_experiments.py</code>, adapted from
+Assignment 3’s visible loop (forward → loss → backward → step →
+validation each epoch).</p>
+<h3 id="required-learning-curve-plots">Required learning-curve
+plots</h3>
+<figure>
+<img src="training_loss_curves.png"
+alt="Training loss curves by experiment" />
+<figcaption aria-hidden="true">Training loss curves by
+experiment</figcaption>
+</figure>
+<figure>
+<img src="validation_loss_curves.png"
+alt="Validation loss curves by experiment" />
+<figcaption aria-hidden="true">Validation loss curves by
+experiment</figcaption>
+</figure>
+<figure>
+<img src="validation_mae_curves.png"
+alt="Validation MAE in seconds by experiment" />
+<figcaption aria-hidden="true">Validation MAE in seconds by
+experiment</figcaption>
+</figure>
+<p><em>Figures 1–3: Paired before/after learning curves (one panel per
+failure case) with log-scaled y-axes so failure and correction runs are
+readable on the same scale.</em></p>
+<h3 id="summary-table-epoch-12-smoke-10k-cpu">Summary table (epoch 12,
+smoke 10k, CPU)</h3>
+<table>
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 23%" />
+<col style="width: 23%" />
+<col style="width: 17%" />
+</colgroup>
+<thead>
+<tr>
+<th>Experiment</th>
+<th>Controlled change</th>
+<th style="text-align: right;">Final val MSE</th>
+<th style="text-align: right;">Final val MAE (s)</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>case1_high_lr_failure</code></td>
+<td><code>lr = 0.2</code></td>
+<td style="text-align: right;">0.324</td>
+<td style="text-align: right;"><strong>282.7</strong></td>
+<td>Unstable; epoch-9 MAE spike</td>
+</tr>
+<tr>
+<td><code>case1_lr_corrected</code></td>
+<td><code>lr = 0.001</code></td>
+<td style="text-align: right;">0.295</td>
+<td style="text-align: right;"><strong>272.9</strong></td>
+<td>Smooth improvement</td>
+</tr>
+<tr>
+<td><code>case2_unscaled_target_failure</code></td>
+<td>no target scaling</td>
+<td style="text-align: right;">0.458</td>
+<td style="text-align: right;"><strong>430.6</strong></td>
+<td>Slow, poor seconds MAE</td>
+</tr>
+<tr>
+<td><code>case2_scaled_target_corrected</code></td>
+<td>standardized log target</td>
+<td style="text-align: right;">0.295</td>
+<td style="text-align: right;"><strong>272.9</strong></td>
+<td>Matches stable training</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Shared settings (all four runs unless noted):</strong> Adam
+optimizer; batch size <strong>512</strong>; hidden dim
+<strong>64</strong>; embedding dim <strong>16</strong>;
+<strong>12</strong> epochs; prepared temporal split; numeric inputs
+standardized; seed <strong>6320</strong>; validation MAE in seconds
+reported each epoch.</p>
+<hr />
+<h3 id="failure-case-1-learning-rate-too-high">Failure case 1 — learning
+rate too high</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Report field</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Experiment setting</strong></td>
+<td>Same MLP, data, batch size (<strong>512</strong>), target/numeric
+scaling, and seed (<strong>6320</strong>); only change is
+<strong>learning rate = 0.2</strong> (vs default
+<strong>0.001</strong>).</td>
+</tr>
+<tr>
+<td><strong>Expected behavior / test intent</strong></td>
+<td>Deliberately test whether an oversized Adam step would produce
+<strong>unstable or oscillating</strong> train/validation curves rather
+than smooth descent.</td>
+</tr>
+<tr>
+<td><strong>Failure signal</strong></td>
+<td>Validation MAE became unstable and spiked to <strong>20,226
+s</strong> at epoch 9; training loss oscillated (e.g., 0.40 →
+<strong>1.55</strong> → 0.40 between epochs 7–8).</td>
+</tr>
+<tr>
+<td><strong>Evidence (before)</strong></td>
+<td><code>case1_high_lr_failure_history.csv</code>; Figure 3 (Case 1
+panel) shows the MAE spike; Figure 1 (Case 1 panel) shows non-monotonic
+training loss.</td>
+</tr>
+<tr>
+<td><strong>Diagnosis</strong></td>
+<td>Adam step size was too large for the scaled MSE objective and
+embedding+MLP landscape, causing overshoot and unstable updates.</td>
+</tr>
+<tr>
+<td><strong>Controlled change</strong></td>
+<td>Reduce learning rate from <strong>0.2 → 0.001</strong> only; hold
+all other settings fixed.</td>
+</tr>
+<tr>
+<td><strong>Evidence (after)</strong></td>
+<td><code>case1_lr_corrected_history.csv</code>; validation MAE improved
+steadily <strong>503 → 273 s</strong> with no spikes (Figure 3, Case 1
+panel).</td>
+</tr>
+<tr>
+<td><strong>Before / after comparison</strong></td>
+<td>Failure run: unstable curves and catastrophic epoch-9 MAE despite
+epoch-12 MAE <strong>282.7 s</strong> looking acceptable. Corrected run:
+monotonic improvement and stable validation.</td>
+</tr>
+<tr>
+<td><strong>Limitation</strong></td>
+<td>High learning rate still partially converged by epoch 12 on the
+smoke subset; instability—not total divergence—was the diagnosable
+failure mode.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What I learned:</strong> A single hyperparameter can produce
+misleading “okay” aggregate metrics while hiding catastrophic
+single-epoch validation behavior. Learning-curve plots exposed a spike
+that a final-epoch table alone would understate.</p>
+<hr />
+<h3 id="failure-case-2-target-not-standardized">Failure case 2 — target
+not standardized</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Report field</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Experiment setting</strong></td>
+<td>Same MLP, learning rate (<strong>0.001</strong>), batch size, and
+seed; only change is <strong>no standardization of
+<code>target_log_duration</code></strong> before MSE (train mean/std
+scaling disabled).</td>
+</tr>
+<tr>
+<td><strong>Expected behavior / test intent</strong></td>
+<td>Test whether optimizing on <strong>unstandardized log-duration
+targets</strong> would produce <strong>misleading loss descent</strong>
+and poor <strong>seconds MAE</strong> because gradient scale would not
+match standardized numeric inputs.</td>
+</tr>
+<tr>
+<td><strong>Failure signal</strong></td>
+<td>Training on <strong>unstandardized log-duration</strong> targets
+produced slow loss descent and <strong>poor final validation MAE (430.6
+s)</strong> despite falling MSE.</td>
+</tr>
+<tr>
+<td><strong>Evidence (before)</strong></td>
+<td><code>case2_unscaled_target_failure_history.csv</code>; Figure 2
+(Case 2 panel) shows higher validation loss; Figure 3 (Case 2 panel)
+shows MAE stuck above the corrected run.</td>
+</tr>
+<tr>
+<td><strong>Diagnosis</strong></td>
+<td>Without standardizing the regression target, gradient magnitudes
+were poorly matched to the scaled numeric inputs and embedding outputs
+(same issue family as Assignment 3’s raw-seconds training).</td>
+</tr>
+<tr>
+<td><strong>Controlled change</strong></td>
+<td>Standardize <code>target_log_duration</code> using <strong>train
+mean/std</strong> before MSE; convert back for seconds MAE
+reporting.</td>
+</tr>
+<tr>
+<td><strong>Evidence (after)</strong></td>
+<td><code>case2_scaled_target_corrected_history.csv</code>; validation
+MAE improved <strong>503 → 273 s</strong> across 12 epochs (Figure 3,
+Case 2 panel).</td>
+</tr>
+<tr>
+<td><strong>Before / after comparison</strong></td>
+<td>Failure run: high initial loss, slow improvement, final val MAE
+<strong>430.6 s</strong>. Corrected run: lower starting loss and final
+val MAE <strong>272.9 s</strong> with aligned train/val descent.</td>
+</tr>
+<tr>
+<td><strong>Limitation</strong></td>
+<td>Smoke 10k drives Figures 1–3; CHPC full run (job 1442745) confirmed
+pipeline at scale with a different Case 2 pattern (see CHPC note).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What I learned:</strong> Preprocessing is part of training
+stability. A descending loss on the wrong target scale can look like
+progress while seconds MAE remains practically poor.</p>
+<hr />
+<h3 id="run-evidence-local">Run evidence (local)</h3>
+<ul>
+<li>Command: <code>bash run_smoke_test.sh</code></li>
+<li>Log: <code>logs/run_smoke.log</code></li>
+<li>Artifacts: <code>outputs/*_history.csv</code>,
+<code>outputs/*_summary.json</code>, <code>outputs/plots/*.png</code>,
+<code>outputs/experiment_manifest.json</code></li>
+</ul>
+<h3 id="chpc-evidence">CHPC evidence</h3>
+<p><strong>Smoke test</strong> —
+<code>sbatch run_week04_smoke_test.slurm</code> (job
+<strong>1442471</strong>, 10k rows; learning curves in Figures 1–3):</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Node / GPU</td>
+<td><code>grn077</code>, NVIDIA RTX PRO 6000 Blackwell, CUDA</td>
+</tr>
+<tr>
+<td>Logs</td>
+<td><code>logs/slurm-smoke-1442471.out</code>, <code>.err</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Full prepared dataset</strong> —
+<code>sbatch run_week04_tlc_debugging.slurm</code> (job
+<strong>1442745</strong>, ~8.5M rows):</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Node / GPU</td>
+<td><code>grn077</code>, CUDA</td>
+</tr>
+<tr>
+<td>Logs</td>
+<td><code>logs/slurm-full-1442745.out</code>, <code>.err</code> (empty —
+no errors)</td>
+</tr>
+<tr>
+<td>Case 1 failure</td>
+<td>Train/val MSE <strong>stuck ~1.0</strong>; val MAE <strong>~478
+s</strong> flat — model failed to learn</td>
+</tr>
+<tr>
+<td>Case 1 corrected</td>
+<td>Val MAE <strong>503 → 218 s</strong></td>
+</tr>
+<tr>
+<td>Case 2 (full)</td>
+<td>See note below</td>
+</tr>
+</tbody>
+</table>
+<p>Both jobs completed all four experiments and regenerated
+<code>outputs/plots/</code>. The <strong>smoke-run curves</strong> in
+this writeup best illustrate Case 1’s epoch-9 MAE spike and Case 2’s
+preprocessing failure; the <strong>full run</strong> confirms the same
+pipeline at scale and shows Case 1 high-LR as <strong>stagnant
+learning</strong> rather than a single spike.</p>
+<p><strong>Case 2 note (full vs smoke):</strong> On smoke 10k, unscaled
+targets clearly hurt (final val MAE <strong>430 vs 273 s</strong>). On
+the full dataset, unscaled training reached a lower final val MAE
+(<strong>178 s</strong>) but epoch-1 train MSE was <strong>0.80 vs
+0.17</strong> scaled, and the scaled run showed <strong>validation loss
+rising after epoch 5</strong> while train loss kept falling — a separate
+generalization warning. Smoke evidence remains the primary before/after
+for the preprocessing fix.</p>
+<hr />
+<h2 id="part-b-locked-portfolio-project-charter-board-game-geek">Part B
+— Locked portfolio project charter (Board Game Geek)</h2>
+<h3 id="portfolio-problem-statement">Portfolio problem statement</h3>
+<p>Help a hobby retailer estimate whether a <strong>new or upcoming
+board game</strong> is likely to reach a practical <strong>BoardGameGeek
+average rating ≥ 7.0</strong> using information available <strong>before
+stable community ratings exist</strong> (design metadata and text), so
+stocking decisions can be made at announcement / preorder time.</p>
+<h3 id="intended-stakeholder-use-case">Intended stakeholder / use
+case</h3>
+<p><strong>Stakeholder:</strong> hobby retailer or buyer curating
+inventory for BGG-aware customers.</p>
+<p><strong>Decision:</strong> preorder / initial stock vs pass — based
+on predicted eventual community reception, not same-day ratings.</p>
+<p><strong>Prediction moment:</strong> during the announced / preorder
+window — often <strong>years before</strong> official market release
+once a BGG page exists, and before sufficient rating votes
+accumulate.</p>
+<h3 id="dataset-source-access-and-licensing">Dataset source, access, and
+licensing</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Item</th>
+<th>Lock</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Source</td>
+<td>Kaggle <em>Board Games Database from BoardGameGeek</em>
+(<code>threnjen/board-games-database-from-boardgamegeek</code>)</td>
+</tr>
+<tr>
+<td>Unit</td>
+<td>One row per game (~21,925 in Assignment 2 scan)</td>
+</tr>
+<tr>
+<td>Access</td>
+<td>Kaggle API token verified in Assignment 2 (<code>games.csv</code>
+downloads and parses)</td>
+</tr>
+<tr>
+<td>License / use</td>
+<td>Course and research use under Kaggle terms; not commercial BGG API
+replacement</td>
+</tr>
+<tr>
+<td>Consent</td>
+<td>Public aggregated game metadata; no individual human subjects</td>
+</tr>
+<tr>
+<td>Constraints</td>
+<td>No live scraping; document voter-selection bias and Kaggle snapshot
+date</td>
+</tr>
+</tbody>
+</table>
+<h3 id="prediction-target">Prediction target</h3>
+<ul>
+<li><strong>Target:</strong> <code>high_rating = 1</code> if
+<code>AvgRating &gt;= 7.0</code>, else <code>0</code></li>
+<li><strong>Balance:</strong> ~26.9% positive (5,895 games) — imbalanced
+but workable</li>
+<li><strong>Label timing:</strong> historical final ratings for
+training; eventual rating for intended deployment narrative</li>
+</ul>
+<h3 id="candidate-input-features">Candidate input features</h3>
+<p><strong>Include (v1):</strong> <code>YearPublished</code>,
+<code>MinPlayers</code>, <code>MaxPlayers</code>, manufacturer/community
+playtime fields, age recommendations,
+<strong><code>GameWeight</code></strong> (complexity — design metadata,
+not a rating outcome), encoded <strong>mechanics</strong> and
+<strong>categories</strong> (after join deduplication), and raw
+<strong><code>Name</code></strong> and
+<strong><code>Description</code></strong>.</p>
+<p><strong>Hard exclude (target / direct rating leakage):</strong>
+<code>AvgRating</code>, <code>BayesAvgRating</code>,
+<code>StdDev</code>, <code>NumRatings</code>, <code>UsersRated</code>,
+<code>RatingRank</code>, and any column derived from those fields. These
+encode the answer or post-hoc rating mechanics and must never enter
+<em>X</em>.</p>
+<p><strong>Exclude (community-demand fields):</strong>
+<strong><code>NumOwned</code></strong>,
+<strong><code>NumWant</code></strong>, and
+<strong><code>NumWish</code></strong>.</p>
+<ul>
+<li><strong><code>NumOwned</code>:</strong> not available before release
+— ownership requires copies in circulation.</li>
+<li><strong><code>NumWant</code> / <code>NumWish</code>:</strong> a BGG
+page can exist years before market release, but the Kaggle snapshot
+stores <strong>cumulative totals at export time</strong>, not counts
+frozen at the preorder decision moment. Using these columns in training
+<strong>treats later accumulated want/wish activity as if it were known
+pre-release</strong> — a prediction-time timing mistake, not a field
+that is literally unavailable on the page. Without time-stamped
+want/wish values, these columns stay out of <em>X</em>.</li>
+</ul>
+<p><strong>Text encoding (v1):</strong> simple features from
+<code>Name</code> and <code>Description</code> (e.g., length/token
+counts or bag-of-words for baselines; richer text only if baselines
+justify it).</p>
+<h3 id="prediction-time-availability-and-leakage-risks">Prediction-time
+availability and leakage risks</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Consequence</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rating-derived columns in <em>X</em></td>
+<td>Trivial accuracy inflation</td>
+<td>Hard exclude: <code>AvgRating</code>, <code>BayesAvgRating</code>,
+<code>StdDev</code>, vote/rank fields</td>
+</tr>
+<tr>
+<td>Community-demand fields (<code>NumOwned</code>,
+<code>NumWant</code>, <code>NumWish</code>)</td>
+<td>Snapshot conflates later cumulative counts with pre-release
+inputs</td>
+<td>Exclude all three from <em>X</em></td>
+</tr>
+<tr>
+<td>Title / description memorization</td>
+<td>Famous franchises may dominate signal</td>
+<td>Keep <code>Name</code> / <code>Description</code> in v1; monitor
+slice errors and compare to tabular-only ablation</td>
+</tr>
+<tr>
+<td>Mechanics join duplication</td>
+<td>Inflated feature rows</td>
+<td>One-hot with dedupe rules</td>
+</tr>
+<tr>
+<td>Train/test franchise leakage</td>
+<td>Optimistic metrics</td>
+<td>Hold out by game; consider publisher/franchise groups</td>
+</tr>
+</tbody>
+</table>
+<h3 id="data-quality-missingness-imbalance-representativeness">Data
+quality, missingness, imbalance, representativeness</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Concern</th>
+<th>Evidence / plan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Missingness</td>
+<td>~40 metadata columns ≥50% non-missing (A2 scan); document per-column
+rates in prep manifest</td>
+</tr>
+<tr>
+<td>Imbalance</td>
+<td>~27% positive — report precision/recall/F1, not accuracy alone</td>
+</tr>
+<tr>
+<td>Representativeness</td>
+<td>BGG voters are self-selected enthusiasts; model describes BGG
+reception, not universal appeal</td>
+</tr>
+<tr>
+<td>Snapshot bias</td>
+<td>Kaggle mirror is static; newer releases may be underrepresented</td>
+</tr>
+</tbody>
+</table>
+<h3 id="responsible-use-limitations">Responsible-use limitations</h3>
+<ul>
+<li>Outputs are <strong>inventory screening aids</strong>, not
+individual purchase advice.</li>
+<li>Ratings reflect community taste, not objective quality.</li>
+<li>Small publishers and non-English titles may be
+underrepresented.</li>
+<li>Human review required for high-stakes stocking decisions.</li>
+</ul>
+<h3 id="baseline-model-plan">Baseline model plan</h3>
+<ol type="1">
+<li><strong>Majority-class / prevalence baseline</strong></li>
+<li><strong>Logistic regression</strong> on encoded tabular
+features</li>
+<li><strong>Gradient-boosted trees</strong> (primary classical
+comparator)</li>
+</ol>
+<p>Neural model only if classical baselines plateau on held-out
+games.</p>
+<h3 id="initial-model-candidate">Initial model candidate</h3>
+<p><strong>Gradient-boosted trees</strong> on encoded
+mechanics/categories, numeric metadata, <code>GameWeight</code>, and
+simple <code>Name</code>/<code>Description</code> features — strong
+default for heterogeneous tabular data with imbalance.</p>
+<h3 id="evaluation-metrics-and-split-strategy">Evaluation metrics and
+split strategy</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Precision / recall / F1</strong> on
+<code>high_rating</code></td>
+<td>Imbalanced binary task</td>
+</tr>
+<tr>
+<td><strong>ROC-AUC</strong></td>
+<td>Threshold-independent ranking quality</td>
+</tr>
+<tr>
+<td><strong>Confusion-matrix costs</strong></td>
+<td>False “stock” vs false “skip” for retailer story</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Split:</strong> hold-out by game (stratified if possible);
+consider time-based slice by <code>YearPublished</code> for “new game”
+realism checks in later weeks.</p>
+<h3 id="scope-limits">Scope limits</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>In scope</th>
+<th>Out of scope (v1)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tabular metadata + mechanics/categories +
+<code>GameWeight</code></td>
+<td>Complexity/weight as <strong>primary target</strong> (still
+predicting rating bar)</td>
+</tr>
+<tr>
+<td><code>Name</code> / <code>Description</code> with simple text
+encoding</td>
+<td>Heavy transformer / embedding pipelines unless baselines
+plateau</td>
+</tr>
+<tr>
+<td>Classical + optional small NN comparison</td>
+<td>Production store API integration</td>
+</tr>
+<tr>
+<td>Error analysis by publisher/year slices</td>
+<td>Individual consumer recommender app</td>
+</tr>
+</tbody>
+</table>
+<h3 id="success-criteria-course-project">Success criteria (course
+project)</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Success looks like</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clean prep with documented leakage exclusions</td>
+<td>Reproducible manifest + feature list</td>
+</tr>
+<tr>
+<td>Classical baseline beats majority class meaningfully</td>
+<td>F1 / ROC-AUC clearly above trivial floor</td>
+</tr>
+<tr>
+<td>Honest evaluation on held-out games</td>
+<td>No franchise leakage in split</td>
+</tr>
+<tr>
+<td>Clear stakeholder recommendation</td>
+<td>Evidence-limited “stock / skip / review” framing</td>
+</tr>
+<tr>
+<td>Responsible-use documented</td>
+<td>No overclaim of universal quality</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Not required:</strong> beating state-of-the-art BGG
+prediction; deployment-ready system.</p>
+<h3 id="fallback-plan">Fallback plan</h3>
+<p><strong>College Scorecard</strong> (institution debt-to-earnings
+burden) remains feasible (Assignment 2 scan) if BGG signal is too weak
+after leakage cleanup or joins stall. Fallback still answers a
+stakeholder screening question honestly.</p>
+<p><strong>In-project fallback:</strong> narrow to “recent releases
+only” or binary target tweak only with instructor approval; simplify to
+logistic regression if tree pipelines over-run scope.</p>
+<h3 id="staged-model-improvement-plan-remaining-assignments">Staged
+model-improvement plan (remaining assignments)</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Plan</th>
+<th>Evidence to collect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Baseline</strong></td>
+<td>Majority + logistic regression</td>
+<td>F1, ROC-AUC, confusion matrix</td>
+</tr>
+<tr>
+<td><strong>Initial candidate</strong></td>
+<td>Gradient-boosted trees on tabular features</td>
+<td>Compare to logistic; slice by year/publisher</td>
+</tr>
+<tr>
+<td><strong>Revised / alternative</strong></td>
+<td>Small neural net <strong>or</strong> simpler logistic if trees
+suffice</td>
+<td>Show whether added complexity earns lift</td>
+</tr>
+<tr>
+<td><strong>Final recommendation</strong></td>
+<td>Pick model by evidence-limited stakeholder criterion</td>
+<td>What error type matters more for retailer</td>
+</tr>
+</tbody>
+</table>
+<p>This week’s TLC debugging exercises do <strong>not</strong> count as
+the portfolio model — they inform training discipline only.</p>
+<h3 id="evidence-plan-for-final-presentation">Evidence plan for final
+presentation</h3>
+<ul>
+<li>Dataset audit table (below) and prep manifest</li>
+<li>Baseline vs candidate metrics on held-out games</li>
+<li>Slice analysis (imbalance, year cohort, publisher size)</li>
+<li>Leakage checklist signed off in prep</li>
+<li>Explicit limitations and responsible-use statement</li>
+<li>One clear recommendation: when to trust / not trust model output for
+stocking</li>
+</ul>
+<h3 id="completed-portfolio-dataset-audit">Completed portfolio dataset
+audit</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Audit category</th>
+<th>Entry</th>
+<th>Week 5+ follow-up</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Source / use</strong></td>
+<td>Kaggle BGG mirror; course/research use under Kaggle terms; not
+commercial API</td>
+<td>Confirm snapshot date in manifest</td>
+</tr>
+<tr>
+<td><strong>Target / input timing</strong></td>
+<td>Predict eventual ≥7.0 from design metadata + text at
+announcement/preorder time; hard exclude rating-derived columns; exclude
+demand fields whose snapshot values are not timed to decision moment
+(<code>NumOwned</code>, <code>NumWant</code>, <code>NumWish</code>)</td>
+<td>Time-split evaluation on recent-release cohorts</td>
+</tr>
+<tr>
+<td><strong>Missingness</strong></td>
+<td>~40 columns ≥50% non-missing; mechanics join TBD</td>
+<td>Per-column missing report in prep</td>
+</tr>
+<tr>
+<td><strong>Imbalance</strong></td>
+<td>~27% positive</td>
+<td>Report recall/F1; tune threshold for retailer costs</td>
+</tr>
+<tr>
+<td><strong>Representativeness</strong></td>
+<td>BGG enthusiast voters; English/market bias</td>
+<td>Slice metrics by publisher size / year</td>
+</tr>
+<tr>
+<td><strong>Leakage / timing</strong></td>
+<td>Hard exclude rating-derived fields; exclude mis-timed demand counts;
+include <code>GameWeight</code>,
+<code>Name</code>/<code>Description</code></td>
+<td>Automated feature-timing check in prep script</td>
+</tr>
+<tr>
+<td><strong>Responsible use</strong></td>
+<td>Screening aid only; human review required</td>
+<td>Document in final memo</td>
+</tr>
+</tbody>
+</table>
+<p>Direction unchanged from Assignment 3; no dataset pivot required.</p>
+<hr />
+<h2 id="ai-disclosure">AI disclosure</h2>
+<p><strong>Tool:</strong> Cursor (Composer)</p>
+<p><strong>AI-assisted:</strong> Repo scaffolding, training/plot
+scripts, Slurm and README templates (adapted from the Week 4 course
+package and prior assignments), and first-draft writeup prose.</p>
+<p><strong>My work:</strong> Selected the failure/correction
+experiments; ran local smoke tests and CHPC jobs
+<strong>1442471</strong> and <strong>1442745</strong>; checked all
+metrics and plots against saved logs; defined and locked the Part B
+feature policy and charter edits.</p>
+<p><strong>Certification:</strong> I certify that all work not described
+above is my own, and I verified AI-generated content for accuracy.</p>
+</body>
+</html>

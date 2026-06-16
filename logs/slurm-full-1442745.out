@@ -1,0 +1,71 @@
+Job ID: 1442745
+Host: grn077
+CUDA_VISIBLE_DEVICES=0
+GPU 0: NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition (UUID: GPU-4f657a12-260e-6039-3e7d-6ac46f252590)
+
+=== case1_high_lr_failure ===
+Failure: learning rate too high for stable Adam updates.
+lr=0.2, scale_target=True, scale_numeric=True
+epoch=01 train_mse=0.9289 val_mse=0.9636 val_mae=478.2s
+epoch=02 train_mse=1.0031 val_mse=0.9623 val_mae=477.9s
+epoch=03 train_mse=1.0031 val_mse=0.9650 val_mae=478.5s
+epoch=04 train_mse=1.0029 val_mse=1.0135 val_mae=488.1s
+epoch=05 train_mse=1.0031 val_mse=0.9742 val_mae=480.5s
+epoch=06 train_mse=1.0028 val_mse=0.9735 val_mae=480.3s
+epoch=07 train_mse=1.0030 val_mse=0.9597 val_mae=477.2s
+epoch=08 train_mse=1.0032 val_mse=0.9641 val_mae=478.3s
+epoch=09 train_mse=1.0029 val_mse=0.9616 val_mae=477.8s
+epoch=10 train_mse=1.0032 val_mse=0.9599 val_mae=477.3s
+epoch=11 train_mse=1.0028 val_mse=0.9767 val_mae=481.0s
+epoch=12 train_mse=1.0033 val_mse=0.9615 val_mae=477.7s
+
+=== case1_lr_corrected ===
+Correction: reduce learning rate while holding other settings fixed.
+lr=0.001, scale_target=True, scale_numeric=True
+epoch=01 train_mse=0.1747 val_mse=0.1407 val_mae=177.5s
+epoch=02 train_mse=0.1368 val_mse=0.1390 val_mae=175.1s
+epoch=03 train_mse=0.1328 val_mse=0.1377 val_mae=173.5s
+epoch=04 train_mse=0.1308 val_mse=0.1375 val_mae=172.8s
+epoch=05 train_mse=0.1295 val_mse=0.1397 val_mae=175.3s
+epoch=06 train_mse=0.1286 val_mse=0.1468 val_mae=179.0s
+epoch=07 train_mse=0.1278 val_mse=0.1460 val_mae=178.8s
+epoch=08 train_mse=0.1272 val_mse=0.1631 val_mae=191.2s
+epoch=09 train_mse=0.1267 val_mse=0.1701 val_mae=194.7s
+epoch=10 train_mse=0.1263 val_mse=0.1836 val_mae=201.5s
+epoch=11 train_mse=0.1260 val_mse=0.2227 val_mae=221.1s
+epoch=12 train_mse=0.1256 val_mse=0.2203 val_mae=218.0s
+
+=== case2_unscaled_target_failure ===
+Failure: optimize raw log-duration targets without standardization.
+lr=0.001, scale_target=False, scale_numeric=True
+epoch=01 train_mse=0.8043 val_mse=0.0994 val_mae=207.1s
+epoch=02 train_mse=0.0929 val_mse=0.0895 val_mae=201.5s
+epoch=03 train_mse=0.0850 val_mse=0.0834 val_mae=191.8s
+epoch=04 train_mse=0.0787 val_mse=0.0783 val_mae=184.4s
+epoch=05 train_mse=0.0762 val_mse=0.0763 val_mae=182.4s
+epoch=06 train_mse=0.0748 val_mse=0.0751 val_mae=181.6s
+epoch=07 train_mse=0.0739 val_mse=0.0744 val_mae=181.6s
+epoch=08 train_mse=0.0729 val_mse=0.0740 val_mae=179.2s
+epoch=09 train_mse=0.0721 val_mse=0.0738 val_mae=179.8s
+epoch=10 train_mse=0.0715 val_mse=0.0729 val_mae=182.1s
+epoch=11 train_mse=0.0712 val_mse=0.0738 val_mae=178.9s
+epoch=12 train_mse=0.0709 val_mse=0.0728 val_mae=177.7s
+
+=== case2_scaled_target_corrected ===
+Correction: standardize log-duration targets using train mean/std.
+lr=0.001, scale_target=True, scale_numeric=True
+epoch=01 train_mse=0.1747 val_mse=0.1407 val_mae=177.5s
+epoch=02 train_mse=0.1368 val_mse=0.1390 val_mae=175.1s
+epoch=03 train_mse=0.1328 val_mse=0.1377 val_mae=173.5s
+epoch=04 train_mse=0.1308 val_mse=0.1375 val_mae=172.8s
+epoch=05 train_mse=0.1295 val_mse=0.1397 val_mae=175.3s
+epoch=06 train_mse=0.1286 val_mse=0.1468 val_mae=179.0s
+epoch=07 train_mse=0.1278 val_mse=0.1460 val_mae=178.8s
+epoch=08 train_mse=0.1272 val_mse=0.1631 val_mae=191.2s
+epoch=09 train_mse=0.1267 val_mse=0.1701 val_mae=194.7s
+epoch=10 train_mse=0.1263 val_mse=0.1836 val_mae=201.5s
+epoch=11 train_mse=0.1260 val_mse=0.2227 val_mae=221.1s
+epoch=12 train_mse=0.1256 val_mse=0.2203 val_mae=218.0s
+
+Saved experiment outputs to outputs
+wrote learning-curve plots to outputs/plots

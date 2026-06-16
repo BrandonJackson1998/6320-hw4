@@ -1,0 +1,7 @@
+Using CPython 3.12.4 interpreter at: /uufs/chpc.utah.edu/sys/installdir/r8/python/3.12.4/bin/python3
+Creating virtual environment at: .venv
+Downloading matplotlib (9.6MiB)
+Downloading pyarrow (46.6MiB)
+ Downloaded matplotlib
+ Downloaded pyarrow
+Installed 42 packages in 48.93s
